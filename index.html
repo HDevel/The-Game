@@ -16,7 +16,8 @@
 			'#0f0',
 			'#00f',
 			'#0ff'
-	]
+	];
+
 	var objList = new Array();
 	var cube = {
 		width:50,
@@ -28,7 +29,8 @@
 		accY: 1,
 		grav: new Object(),
 		id:-1,
-		switched:false
+		switched:false,
+		score:100
 	}
 	var gravityPlace = new Object();
 
@@ -36,7 +38,8 @@
 		var newCube = Object.create(cube);
 		newCube.x = Math.random() * 250;
 //		newCube.color = '#' + Math.floor(Math.random()*16777215).toString(16);
-		newCube.color = color[Math.floor(Math.random() * color.length)]
+		newCube.item = Math.floor(Math.random() * color.length)
+		newCube.color = color[newCube.item]
 		newCube.id = objList.length;
 		objList.push(newCube);
 	}
@@ -129,13 +132,27 @@
 		objList.forEach(function (v, i) {
 			v.x += v.accX;
 			v.y += v.accY;
+
+			(v.x + v.width/2)
+			if(true){
+
+			}
 			canvasctx.fillStyle = v.color;
 			canvasctx.fillRect(v.x,v.y,v.width,v.height);
 		});
 	}
 
+	function drawDrop(){
+		for(var i = 0; i < color.length; i++){
+			canvasctx.fillStyle = color[i];
+			var w = canvas.width / color.length;
+			canvasctx.fillRect(w * i, canvas.height - 20,w,20);
+		}
+	}
+
 	setInterval(function () {
 		render();
+		drawDrop();
 	},20);
 
 	document.ontouchstart = function ontouchstart(e) {
