@@ -6,12 +6,13 @@
 	<meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,minimal-ui">
 </head>
 <body>
-<canvas id="canvas" width="320" height="500" style=""></canvas>
+<div id="score">0</div>
+<canvas id="canvas" width="320" height="430" style=""></canvas>
 <script>
 	var canvas = document.getElementById('canvas');
 	var canvasctx = canvas.getContext("2d");
 
-	var color = [
+	var colorLib = [
 			'#f00',
 			'#0f0',
 			'#00f',
@@ -26,29 +27,39 @@
 		x:0,
 		y:0,
 		accX:0,
-		accY: 1,
+		accY: 2,
 		grav: new Object(),
 		id:-1,
+		magnetX:0,
 		switched:false,
-		score:100
+		score:100,
+		power:5
 	}
+	var score = 0;
 	var gravityPlace = new Object();
 
-	function createCube(){
+	function createCube(color){
 		var newCube = Object.create(cube);
 		newCube.x = Math.random() * 250;
-//		newCube.color = '#' + Math.floor(Math.random()*16777215).toString(16);
-		newCube.item = Math.floor(Math.random() * color.length)
-		newCube.color = color[newCube.item]
+		newCube.item = color;
+		newCube.color = colorLib[newCube.item]
 		newCube.id = objList.length;
 		objList.push(newCube);
 	}
 
 	setInterval(function () {
-		createCube();
-		createCube();
-	},6000);
-	createCube();
+//		var done = new Object()
+//		for(var i = 0; i < 2; i++){
+//			var Z;
+//			while(done[Z] == undefined){
+//			}
+//			done[Z] = true;
+		Z = Math.floor(Math.random() * colorLib.length);
+			createCube(Z);
+		Z = Math.floor(Math.random() * colorLib.length);
+			createCube(Z);
+//		}
+	},4000);
 	createCube();
 
 	function render(){
@@ -108,7 +119,7 @@
 			});
 
 			if(aloneL && grav[2]){
-				grav[2].x--;
+				grav[2].x -= grav[2].power;
 			} else if(!aloneL && !grav[2].switched && !switchL.switched){
 				var color = grav[2].color;
 				grav[2].color = switchL.color
@@ -117,7 +128,7 @@
 				switchL.switched = true;
 			}
 			if(aloneR && grav[3]){
-				grav[3].x++;
+				grav[3].x += grav[3].power;
 			} else if(!aloneR && !grav[3].switched && !switchR.switched){
 				var color = grav[3].color;
 				grav[3].color = switchR.color
@@ -132,23 +143,43 @@
 		objList.forEach(function (v, i) {
 			v.x += v.accX;
 			v.y += v.accY;
-
-			(v.x + v.width/2)
-			if(true){
-
+			var mag = 0.5
+			if(v.x < v.magnetX){
+				v.x += mag
+			} else {
+				v.x -= mag
 			}
+			var posX = v.x + v.width/2;
+			var dropSize = canvas.width / colorLib.length;
+			var pos = Math.floor(posX / dropSize);
+			if(colorLib[pos] == v.color && v.y > canvas.height - 20){
+				if(v.score != 0){
+					score += v.score;
+					v.score = 0
+				}
+			}
+			if(colorLib[pos] != v.color && v.y > canvas.height - 20){
+				if(v.score != 0){
+					score -= v.score;
+					v.score = 0
+				}
+			}
+			v.magnetX = (dropSize * pos) + (dropSize/2) - (v.width / 2);
 			canvasctx.fillStyle = v.color;
 			canvasctx.fillRect(v.x,v.y,v.width,v.height);
 		});
 	}
 
 	function drawDrop(){
-		for(var i = 0; i < color.length; i++){
-			canvasctx.fillStyle = color[i];
-			var w = canvas.width / color.length;
+		for(var i = 0; i < colorLib.length; i++){
+			canvasctx.fillStyle = colorLib[i];
+			var w = canvas.width / colorLib.length;
 			canvasctx.fillRect(w * i, canvas.height - 20,w,20);
 		}
 	}
+	setInterval(function () {
+		document.getElementById('score').innerHTML = score;
+	},1000)
 
 	setInterval(function () {
 		render();
