@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+	<title>ACL test1</title>
+	<!--<script type="text/javascript" src="http://code.jquery.com/jquery-2.0.0.min.js"></script>-->
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,minimal-ui">
+</head>
+<body>
+<canvas id="canvas" width="320" height="500" style=""></canvas>
+<script>
+	var canvas = document.getElementById('canvas');
+	var canvasctx = canvas.getContext("2d");
+
+	var color = [
+			'#f00',
+			'#0f0',
+			'#00f',
+			'#0ff'
+	]
+	var objList = new Array();
+	var cube = {
+		width:50,
+		height:50,
+		color:'#000',
+		x:0,
+		y:0,
+		accX:0,
+		accY: 1,
+		grav: new Object(),
+		id:-1,
+		switched:false
+	}
+	var gravityPlace = new Object();
+
+	function createCube(){
+		var newCube = Object.create(cube);
+		newCube.x = Math.random() * 250;
+//		newCube.color = '#' + Math.floor(Math.random()*16777215).toString(16);
+		newCube.color = color[Math.floor(Math.random() * color.length)]
+		newCube.id = objList.length;
+		objList.push(newCube);
+	}
+
+	setInterval(function () {
+		createCube();
+		createCube();
+	},6000);
+	createCube();
+	createCube();
+
+	function render(){
+		canvasctx.clearRect(0, 0, canvas.width, canvas.height);
+		objList.forEach(function (v, i) {
+			for(var g in gravityPlace){
+				var grav = gravityPlace[g];
+				if(v.y < grav[1] && grav[1] < v.y + v.height){
+					if(v.x + v.width/2 < grav[0]){
+						if(grav[2] == undefined){
+							grav[2] = v;
+						}
+						if(grav[2].x < v.x){
+							grav[2] = v;
+						}
+					} else {
+						if(grav[3] == undefined){
+							grav[3] = v;
+						}
+						if(grav[3].x > v.x){
+							grav[3] = v;
+						}
+					}
+				}
+			}
+		})
+		for(var g in gravityPlace){
+			var grav = gravityPlace[g];
+
+			var aloneL = true;
+			var aloneR = true;
+			var switchL;
+			var switchR;
+
+			objList.forEach(function (v, i) {
+				if(
+					grav[2] &&
+					v.x < grav[0] &&
+					v.y == grav[2].y &&
+					grav[2].x-2 < v.x + v.width &&
+					grav[2].id != i
+				){
+					aloneL = false;
+					switchL = v;
+				}
+
+				if(
+					grav[3] &&
+					v.x > grav[0] &&
+					v.y == grav[3].y &&
+					grav[3].x + grav[3].width > v.x-2 &&
+					grav[3].id != i
+				){
+					aloneR = false;
+					switchR = v;
+				}
+			});
+
+			if(aloneL && grav[2]){
+				grav[2].x--;
+			} else if(!aloneL && !grav[2].switched && !switchL.switched){
+				var color = grav[2].color;
+				grav[2].color = switchL.color
+				switchL.color = color;
+				grav[2].switched = true;
+				switchL.switched = true;
+			}
+			if(aloneR && grav[3]){
+				grav[3].x++;
+			} else if(!aloneR && !grav[3].switched && !switchR.switched){
+				var color = grav[3].color;
+				grav[3].color = switchR.color
+				switchR.color = color;
+				grav[3].switched = true;
+				switchR.switched = true;
+			}
+
+			delete grav[2];
+			delete grav[3];
+		}
+		objList.forEach(function (v, i) {
+			v.x += v.accX;
+			v.y += v.accY;
+			canvasctx.fillStyle = v.color;
+			canvasctx.fillRect(v.x,v.y,v.width,v.height);
+		});
+	}
+
+	setInterval(function () {
+		render();
+	},20);
+
+	document.ontouchstart = function ontouchstart(e) {
+		e.preventDefault();
+		for(var t in e.changedTouches) {
+			var touch = e.changedTouches[t]
+			if(touch.identifier != undefined){
+				gravityPlace[touch.identifier] = [touch.pageX, touch.pageY];
+			}
+		}
+	}
+	document.ontouchmove = function ontouchmove(e) {
+		e.preventDefault();
+		for(var t in e.changedTouches) {
+			var touch = e.changedTouches[t]
+			if(touch.identifier != undefined){
+				gravityPlace[touch.identifier] = [touch.pageX, touch.pageY];
+			}
+		}
+	}
+	document.ontouchend = function ontouchend(e) {
+		e.preventDefault();
+		for(var t in e.changedTouches) {
+			var touch = e.changedTouches[t]
+			if(touch.identifier != undefined){
+				delete gravityPlace[touch.identifier];
+			}
+		}
+		objList.forEach(function (v, i) {
+			v.switched = false;
+		})
+	}
+
+</script>
+</body>
+</html>
