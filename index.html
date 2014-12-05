@@ -6,17 +6,28 @@
 	<meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,minimal-ui">
 </head>
 <body>
+<style>
+	canvas{
+		position: fixed;
+		top:0px;
+		left:0px;
+		-webkit-transform: scale(0.5);
+		-webkit-transform-origin: 0 0;
+		background-image: url('back_without_rays.png');
+		background-position: bottom center;
+	}
+</style>
 <div id="score">0</div>
-<canvas id="canvas" width="320" height="430" style=""></canvas>
+<canvas id="canvas" width="640" height="920" style=""></canvas>
 <script>
 	var canvas = document.getElementById('canvas');
 	var canvasctx = canvas.getContext("2d");
 
 	var colorLib = [
-			'#f00',
-			'#0f0',
-			'#00f',
-			'#0ff'
+			'#40f339',
+			'#fe3898',
+			'#384cfe',
+			'#fec238'
 	];
 	var preRandomColor = new Array();
 	var preRandomPos = new Array();
@@ -27,8 +38,8 @@
 
 	var objList = new Array();
 	var cube = {
-		width:50,
-		height:50,
+		width:75,
+		height:75,
 		color:'#000',
 		x:0,
 		y:0,
@@ -80,7 +91,6 @@
 	};
 
 	function render(){
-		canvasctx.clearRect(0, 0, canvas.width, canvas.height);
 		objList.forEach(function (v, i) {
 			for(var g in gravityPlace){
 				var grav = gravityPlace[g];
@@ -160,11 +170,23 @@
 		objList.forEach(function (v, i) {
 			v.x += v.accX;
 			v.y += v.accY;
-			var mag = 0.5
-			if(v.x < v.magnetX){
-				v.x += mag
-			} else {
-				v.x -= mag
+			var mag = 0.5;
+			var alone = true;
+			objList.forEach(function (mv, mi) {
+				if(
+					mi != i &&
+					mv.y == v.y &&
+					((v.x < mv.x && v.x + v.width > mv.x) || (v.x > mv.x && v.x < mv.x + mv.width))
+				){
+					alone = false;
+				}
+			})
+			if(alone){
+				if(v.x < v.magnetX){
+					v.x += mag
+				} else {
+					v.x -= mag
+				}
 			}
 			var posX = v.x + v.width/2;
 			var dropSize = canvas.width / colorLib.length;
@@ -200,34 +222,101 @@
 			canvasctx.fillRect(w * i, canvas.height - 20,w,20);
 		}
 	}
-	setInterval(function () {
-		document.getElementById('score').innerHTML = score;
-	},1000)
 
 	setInterval(function () {
+		document.getElementById('score').innerHTML = score;
+	},1000);
+
+	var part = {
+		s:'show',
+		o: 0,
+		x:0,
+		y:0,
+		r:0,
+		sx:0,
+		sy:0,
+		so:0
+	}
+	var particleList = new Array();
+
+	function particle(){
+		particleList.forEach(function (v, i) {
+			v.x += v.sx;
+			v.y += v.sy;
+			v.o += v.so;
+
+			if(v.o > 0){
+				canvasctx.globalAlpha = v.o;
+				canvasctx.beginPath();
+				canvasctx.arc(v.x, v.y, v.r, 0, 2 * Math.PI, false);
+				canvasctx.fillStyle = '#fff';
+				canvasctx.fill();
+				canvasctx.globalAlpha = 1;
+			}
+			if(v.o >= 1 && v.s == 'show'){
+				v.s = 'hide';
+				v.so = -v.so;
+			}
+			if(v.o <= 0 && v.s == 'hide'){
+				v.s = 'delete';
+			}
+
+		});
+		particleList.forEach(function (v, i) {
+			if(v.s == 'delete'){
+				delete particleList[i];
+			}
+		});
+	}
+
+	function getRandomArbitary(min, max)
+	{
+		return Math.random() * (max - min) + min;
+	}
+
+	function addParticle(){
+		var newPart = Object.create(part);
+		newPart.x = Math.random() * canvas.width;
+		newPart.y = Math.random() * canvas.height;
+		newPart.r = Math.random() * 5;
+		var speed = 0.5;
+		newPart.sx = getRandomArbitary(-speed,speed);
+		newPart.sy = getRandomArbitary(-speed,speed);
+		newPart.so = Math.random() * 0.02;
+		particleList.push(newPart);
+	}
+
+	setInterval(function () {
+		addParticle()
+	},100);
+
+
+	setInterval(function () {
+		canvasctx.clearRect(0, 0, canvas.width, canvas.height);
+		particle();
 		render();
 		drawDrop();
 	},20);
 
-	document.ontouchstart = function ontouchstart(e) {
+	canvas.ontouchstart = function ontouchstart(e) {
 		e.preventDefault();
 		for(var t in e.changedTouches) {
 			var touch = e.changedTouches[t]
 			if(touch.identifier != undefined){
-				gravityPlace[touch.identifier] = [touch.pageX, touch.pageY];
+				gravityPlace[touch.identifier] = [touch.pageX * 2, touch.pageY * 2];
 			}
 		}
 	}
-	document.ontouchmove = function ontouchmove(e) {
+	canvas.ontouchmove = function ontouchmove(e) {
 		e.preventDefault();
 		for(var t in e.changedTouches) {
 			var touch = e.changedTouches[t]
 			if(touch.identifier != undefined){
-				gravityPlace[touch.identifier] = [touch.pageX, touch.pageY];
+				gravityPlace[touch.identifier] = [touch.pageX * 2, touch.pageY * 2];
 			}
 		}
 	}
-	document.ontouchend = function ontouchend(e) {
+	canvas.ontouchend = function ontouchend(e) {
 		e.preventDefault();
 		for(var t in e.changedTouches) {
 			var touch = e.changedTouches[t]
