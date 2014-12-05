@@ -85,7 +85,7 @@
 			for(var g in gravityPlace){
 				var grav = gravityPlace[g];
 				if(v.y < grav[1] && grav[1] < v.y + v.height){
-					if(v.x + v.width/2 < grav[0]){
+					if(v.x < grav[0]){
 						if(grav[2] == undefined){
 							grav[2] = v;
 						}
