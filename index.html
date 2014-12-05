@@ -167,7 +167,7 @@
 			delete grav[2];
 			delete grav[3];
 		}
-		console.log('----------------------')
+		console.log('----------------------');
 		objList.forEach(function (v, i) {
 			var mag = 0.5;
 			var alone = true;
@@ -221,6 +221,9 @@
 			if(v.x + v.width > canvas.width){
 				v.x = canvas.width - v.width;
 			}
+			if(v.y < 0){
+				addRayPar(v.x, v.color)
+			}
 			canvasctx.fillStyle = v.color;
 			canvasctx.fillRect(v.x,v.y,v.width,v.height);
 		});
@@ -246,7 +249,8 @@
 		r:0,
 		sx:0,
 		sy:0,
-		so:0
+		so:0,
+		c:'#fff'
 	}
 	var particleList = new Array();
 
@@ -260,7 +264,7 @@
 				canvasctx.globalAlpha = v.o;
 				canvasctx.beginPath();
 				canvasctx.arc(v.x, v.y, v.r, 0, 2 * Math.PI, false);
-				canvasctx.fillStyle = '#fff';
+				canvasctx.fillStyle = v.c;
 				canvasctx.fill();
 				canvasctx.globalAlpha = 1;
 			}
@@ -293,6 +297,19 @@
 		var speed = 0.5;
 		newPart.sx = getRandomArbitary(-speed,speed);
 		newPart.sy = getRandomArbitary(-speed,speed);
+		newPart.so = Math.random() * 0.02;
+		particleList.push(newPart);
+	}
+
+	function addRayPar(x,color){
+		var newPart = Object.create(part);
+		newPart.x = getRandomArbitary(x, x + cube.width);
+		newPart.y = 0;
+		newPart.r = Math.random() * 5;
+		newPart.c = color;
+		var speed = 0.5;
+		newPart.sx = getRandomArbitary(-speed,speed);
+		newPart.sy = getRandomArbitary(0,speed) + 1;
 		newPart.so = Math.random() * 0.02;
 		particleList.push(newPart);
 	}
