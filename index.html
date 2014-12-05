@@ -51,13 +51,13 @@
 
 	var objList = new Array();
 	var cube = {
-		width:100,
-		height:100,
+		width:110,
+		height:110,
 		color:'#000',
 		x:0,
 		y:-200,
 		accX:0,
-		accY: 1,
+		accY: 0.6,
 		grav: new Object(),
 		id:-1,
 		magnetX:0,
@@ -79,7 +79,11 @@
 		newCube.color = preRandomColor[newCube.item]
 		newCube.id = objList.length;
 		objList.push(newCube);
-		cube.accY += 0.1
+		cube.accY += 0.1;
+		perRound += 0.2;
+		if(perRound > colorLib.length){
+			perRound = 1;
+		}
 	}
 	function shuffle(o){ //v1.0
 		for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
@@ -87,19 +91,18 @@
 	};
 
 	var curItem = 10000;
+	var perRound = 1;
 
 	setInterval(function () {
-		for(var i = 0; i < 2; i++){
+		preRandomColor = shuffle(preRandomColor);
+		preRandomPos = shuffle(preRandomPos);
+		curItem = 0;
+		for(var i = 0; i < Math.floor(perRound); i++){
 			randCube()
 		}
 	},4000);
 
 	function randCube(){
-		if(curItem >= colorLib.length){
-			preRandomColor = shuffle(preRandomColor);
-			preRandomPos = shuffle(preRandomPos);
-			curItem = 0;
-		}
 		createCube(curItem);
 		curItem++;
 	};
