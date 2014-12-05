@@ -16,6 +16,19 @@
 		background-image: url('back_without_rays.png');
 		background-position: bottom center;
 	}
+	#score{
+		position: fixed;
+		top:0px;
+		left:0px;
+		z-index: 2;
+		width:320px;
+		text-align: center;
+		font-size: 20px;
+		padding: 3px 0px;
+		background-color: rgba(255,255,255,0.2);
+		color:#fff;
+		font-family: Arial;
+	}
 </style>
 <div id="score">0</div>
 <canvas id="canvas" width="640" height="920" style=""></canvas>
@@ -336,7 +349,7 @@
 		for(var t in e.changedTouches) {
 			var touch = e.changedTouches[t]
 			if(touch.identifier != undefined){
-				gravityPlace[touch.identifier] = [touch.pageX * 2, touch.pageY * 2];
+				gravityPlace[touch.identifier] = [(touch.pageX * 2) - (cube.width/2), touch.pageY * 2];
 			}
 		}
 	}
@@ -345,7 +358,7 @@
 		for(var t in e.changedTouches) {
 			var touch = e.changedTouches[t]
 			if(touch.identifier != undefined){
-				gravityPlace[touch.identifier] = [touch.pageX * 2, touch.pageY * 2];
+				gravityPlace[touch.identifier] = [(touch.pageX * 2) - (cube.width/2), touch.pageY * 2];
 			}
 		}
 	}
