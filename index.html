@@ -57,7 +57,7 @@
 		x:0,
 		y:-200,
 		accX:0,
-		accY: 2,
+		accY: 1,
 		grav: new Object(),
 		id:-1,
 		magnetX:0,
@@ -79,6 +79,7 @@
 		newCube.color = preRandomColor[newCube.item]
 		newCube.id = objList.length;
 		objList.push(newCube);
+		cube.accY += 0.1
 	}
 	function shuffle(o){ //v1.0
 		for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
@@ -255,6 +256,9 @@
 	}
 
 	setInterval(function () {
+		if(score < 0){
+			score = 0
+		}
 		document.getElementById('score').innerHTML = score;
 	},1000);
 
