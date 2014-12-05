@@ -18,6 +18,12 @@
 			'#00f',
 			'#0ff'
 	];
+	var preRandomColor = new Array();
+	var preRandomPos = new Array();
+	colorLib.forEach(function (v, i) {
+		preRandomColor[i] = v;
+		preRandomPos[i] = i;
+	});
 
 	var objList = new Array();
 	var cube = {
@@ -38,29 +44,40 @@
 	var score = 0;
 	var gravityPlace = new Object();
 
-	function createCube(color){
+	function createCube(item){
 		var newCube = Object.create(cube);
-		newCube.x = Math.random() * 250;
-		newCube.item = color;
-		newCube.color = colorLib[newCube.item]
+
+		var dropWidth = canvas.width / colorLib.length;
+		var randPosX = preRandomPos[item];
+
+		newCube.x = dropWidth * randPosX + (dropWidth / 2) - (newCube.width / 2);
+		newCube.item = item;
+		newCube.color = preRandomColor[newCube.item]
 		newCube.id = objList.length;
 		objList.push(newCube);
 	}
+	function shuffle(o){ //v1.0
+		for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+		return o;
+	};
+
+	var curItem = 10000;
 
 	setInterval(function () {
-//		var done = new Object()
-//		for(var i = 0; i < 2; i++){
-//			var Z;
-//			while(done[Z] == undefined){
-//			}
-//			done[Z] = true;
-		Z = Math.floor(Math.random() * colorLib.length);
-			createCube(Z);
-		Z = Math.floor(Math.random() * colorLib.length);
-			createCube(Z);
-//		}
+		for(var i = 0; i < 2; i++){
+			randCube()
+		}
 	},4000);
-	createCube();
+
+	function randCube(){
+		if(curItem >= colorLib.length){
+			preRandomColor = shuffle(preRandomColor);
+			preRandomPos = shuffle(preRandomPos);
+			curItem = 0;
+		}
+		createCube(curItem);
+		curItem++;
+	};
 
 	function render(){
 		canvasctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -165,6 +182,12 @@
 				}
 			}
 			v.magnetX = (dropSize * pos) + (dropSize/2) - (v.width / 2);
+			if(v.x < 0){
+				v.x = 0;
+			}
+			if(v.x + v.width > canvas.width){
+				v.x = canvas.width - v.width;
+			}
 			canvasctx.fillStyle = v.color;
 			canvasctx.fillRect(v.x,v.y,v.width,v.height);
 		});
