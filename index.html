@@ -38,21 +38,27 @@
 		background-color: #ccc;
 		z-index: 3;
 		-webkit-transition: all 1s;
+		background-image: url('iphone_start_screen.png');
+		background-position: bottom center;
+		background-size: cover;
+
 	}
 	#play{
 		position: absolute;
-		top:50%;
+		top:80%;
 		left: 50%;
-		width: 100px;
-		height: 50px;
-		background-color: #333;
-		margin: -25px 0px 0px -50px;
+		width: 102px;
+		height: 29px;
+		margin: -15px 0px 0px -51px;
 		z-index: 3;
 		text-align: center;
 		font-family: Arial;
 		line-height: 50px;
 		font-size: 20px;
 		color: #fff;
+		background-image: url('play.png');
+		background-position: bottom center;
+		background-size: cover;
 	}
 	.visible{
 		top:0px !important;
@@ -65,7 +71,7 @@
 <img id="fec238" src="yellow_track_1.png">
 <canvas id="canvas" width="640" height="920" style=""></canvas>
 <div id="intro" class="visible">
-	<div id="play">play</div>
+	<div id="play"></div>
 </div>
 <script>
 	var canvas = document.getElementById('canvas');
