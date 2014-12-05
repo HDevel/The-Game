@@ -31,17 +31,27 @@
 	}
 </style>
 <div id="score">0</div>
+<img id="40f339" src="green_track_1.png">
+<img id="fe3898" src="pink_track_1.png">
+<img id="384cfe" src="Blue_Track_1.png">
+<img id="fec238" src="yellow_track_1.png">
 <canvas id="canvas" width="640" height="920" style=""></canvas>
 <script>
 	var canvas = document.getElementById('canvas');
 	var canvasctx = canvas.getContext("2d");
 
 	var colorLib = [
-			'#40f339',
-			'#fe3898',
-			'#384cfe',
-			'#fec238'
+			'40f339',
+			'fe3898',
+			'384cfe',
+			'fec238'
 	];
+	var colorImgLib = {
+			'40f339' : document.getElementById('40f339'),
+			'fe3898' : document.getElementById('fe3898'),
+			'384cfe' : document.getElementById('384cfe'),
+			'fec238' : document.getElementById('fec238')
+	};
 	var preRandomColor = new Array();
 	var preRandomPos = new Array();
 	colorLib.forEach(function (v, i) {
@@ -54,6 +64,7 @@
 		width:115,
 		height:115,
 		color:'#000',
+		img:'#000',
 		x:0,
 		y:-200,
 		accX:0,
@@ -76,8 +87,9 @@
 
 		newCube.x = dropWidth * randPosX + (dropWidth / 2) - (newCube.width / 2);
 		newCube.item = item;
-		newCube.color = preRandomColor[newCube.item]
+		newCube.color = '#' + preRandomColor[newCube.item]
 		newCube.id = objList.length;
+		newCube.img = colorImgLib[preRandomColor[newCube.item]];
 		objList.push(newCube);
 		if(perRound > colorLib.length + 0.2){
 			perRound = 1;
@@ -203,7 +215,7 @@
 			if(alone){
 				if(v.x < v.magnetX){
 					v.x += mag
-				} else {
+				} else if(v.x > v.magnetX){
 					v.x -= mag
 				}
 			}
@@ -240,8 +252,10 @@
 			if(v.y < 0){
 				addRayPar(v.x, v.color)
 			}
-			canvasctx.fillStyle = v.color;
-			canvasctx.fillRect(v.x,v.y,v.width,v.height);
+//			canvasctx.fillStyle = v.color;
+//			canvasctx.fillRect(v.x,v.y,v.width,v.height);
+
+			canvasctx.drawImage(v.img, 0, 0, 152, 152, Math.round(v.x), v.y, v.width, v.height);
 		});
 		objList.forEach(function (v, i) {
 			if(v.y > canvas.height){
