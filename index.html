@@ -226,6 +226,11 @@
 			canvasctx.fillStyle = v.color;
 			canvasctx.fillRect(v.x,v.y,v.width,v.height);
 		});
+		objList.forEach(function (v, i) {
+			if(v.y > canvas.height){
+				delete objList[i];
+			}
+		})
 	}
 
 	function drawDrop(){
