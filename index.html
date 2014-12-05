@@ -42,7 +42,7 @@
 		height:75,
 		color:'#000',
 		x:0,
-		y:0,
+		y:-200,
 		accX:0,
 		accY: 2,
 		grav: new Object(),
@@ -167,20 +167,23 @@
 			delete grav[2];
 			delete grav[3];
 		}
+		console.log('----------------------')
 		objList.forEach(function (v, i) {
-			v.x += v.accX;
-			v.y += v.accY;
 			var mag = 0.5;
 			var alone = true;
 			objList.forEach(function (mv, mi) {
 				if(
-					mi != i &&
-					mv.y == v.y &&
-					((v.x < mv.x && v.x + v.width > mv.x) || (v.x > mv.x && v.x < mv.x + mv.width))
+					mv.id != v.id &&
+					mv.y == v.y
 				){
-					alone = false;
+					if(
+						(mv.x > v.x && mv.x < v.x + v.width) ||
+						(mv.x + mv.width > v.x && mv.x + mv.width < v.x + v.width)
+					){
+						alone = false;
+					}
 				}
-			})
+			});
 			if(alone){
 				if(v.x < v.magnetX){
 					v.x += mag
@@ -188,6 +191,14 @@
 					v.x -= mag
 				}
 			}
+		});
+		objList.forEach(function (v, i) {
+			var mag = 0.5;
+			var alone = true;
+
+			v.x += v.accX;
+			v.y += v.accY;
+
 			var posX = v.x + v.width/2;
 			var dropSize = canvas.width / colorLib.length;
 			var pos = Math.floor(posX / dropSize);
