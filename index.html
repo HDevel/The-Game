@@ -79,11 +79,11 @@
 		newCube.color = preRandomColor[newCube.item]
 		newCube.id = objList.length;
 		objList.push(newCube);
-		cube.accY += 0.1;
-		perRound += 0.2;
-		if(perRound > colorLib.length){
+		if(perRound > colorLib.length + 0.2){
 			perRound = 1;
 		}
+		cube.accY += 0.1;
+		perRound += 0.07;
 	}
 	function shuffle(o){ //v1.0
 		for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
