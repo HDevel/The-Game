@@ -303,13 +303,14 @@
 	function addRayPar(x,color){
 		var newPart = Object.create(part);
 		newPart.x = getRandomArbitary(x, x + cube.width);
-		newPart.y = 0;
+		newPart.y = -10;
 		newPart.r = Math.random() * 5;
 		newPart.c = color;
 		var speed = 0.5;
 		newPart.sx = getRandomArbitary(-speed,speed);
 		newPart.sy = getRandomArbitary(0,speed) + 1;
 		newPart.so = Math.random() * 0.02;
+		newPart.o = 1;
 		particleList.push(newPart);
 	}
 
