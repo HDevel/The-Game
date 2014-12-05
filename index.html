@@ -29,6 +29,34 @@
 		color:#fff;
 		font-family: Arial;
 	}
+	#intro{
+		position: fixed;
+		top:-100%;
+		left: 0px;
+		width: 100%;
+		height: 100%;
+		background-color: #ccc;
+		z-index: 3;
+		-webkit-transition: all 1s;
+	}
+	#play{
+		position: absolute;
+		top:50%;
+		left: 50%;
+		width: 100px;
+		height: 50px;
+		background-color: #333;
+		margin: -25px 0px 0px -50px;
+		z-index: 3;
+		text-align: center;
+		font-family: Arial;
+		line-height: 50px;
+		font-size: 20px;
+		color: #fff;
+	}
+	.visible{
+		top:0px !important;
+	}
 </style>
 <div id="score">0</div>
 <img id="40f339" src="green_track_1.png">
@@ -36,21 +64,24 @@
 <img id="384cfe" src="Blue_Track_1.png">
 <img id="fec238" src="yellow_track_1.png">
 <canvas id="canvas" width="640" height="920" style=""></canvas>
+<div id="intro" class="visible">
+	<div id="play">play</div>
+</div>
 <script>
 	var canvas = document.getElementById('canvas');
 	var canvasctx = canvas.getContext("2d");
 
 	var colorLib = [
-			'40f339',
-			'fe3898',
-			'384cfe',
-			'fec238'
+			'#40f339',
+			'#fe3898',
+			'#384cfe',
+			'#fec238'
 	];
 	var colorImgLib = {
-			'40f339' : document.getElementById('40f339'),
-			'fe3898' : document.getElementById('fe3898'),
-			'384cfe' : document.getElementById('384cfe'),
-			'fec238' : document.getElementById('fec238')
+			'#40f339' : document.getElementById('40f339'),
+			'#fe3898' : document.getElementById('fe3898'),
+			'#384cfe' : document.getElementById('384cfe'),
+			'#fec238' : document.getElementById('fec238')
 	};
 	var preRandomColor = new Array();
 	var preRandomPos = new Array();
@@ -87,7 +118,7 @@
 
 		newCube.x = dropWidth * randPosX + (dropWidth / 2) - (newCube.width / 2);
 		newCube.item = item;
-		newCube.color = '#' + preRandomColor[newCube.item]
+		newCube.color = preRandomColor[newCube.item]
 		newCube.id = objList.length;
 		newCube.img = colorImgLib[preRandomColor[newCube.item]];
 		objList.push(newCube);
@@ -104,15 +135,6 @@
 
 	var curItem = 10000;
 	var perRound = 1;
-
-	setInterval(function () {
-		preRandomColor = shuffle(preRandomColor);
-		preRandomPos = shuffle(preRandomPos);
-		curItem = 0;
-		for(var i = 0; i < Math.floor(perRound); i++){
-			randCube()
-		}
-	},4000);
 
 	function randCube(){
 		createCube(curItem);
@@ -180,6 +202,8 @@
 				var color = grav[2].color;
 				grav[2].color = switchL.color
 				switchL.color = color;
+				grav[2].img = colorImgLib[grav[2].color];
+				switchL.img = colorImgLib[switchL.color];
 				grav[2].switched = true;
 				switchL.switched = true;
 			}
@@ -189,6 +213,8 @@
 				var color = grav[3].color;
 				grav[3].color = switchR.color
 				switchR.color = color;
+				grav[3].img = colorImgLib[grav[3].color];
+				switchR.img = colorImgLib[switchR.color];
 				grav[3].switched = true;
 				switchR.switched = true;
 			}
@@ -258,7 +284,7 @@
 			canvasctx.drawImage(v.img, 0, 0, 152, 152, Math.round(v.x), v.y, v.width, v.height);
 		});
 		objList.forEach(function (v, i) {
-			if(v.y > canvas.height){
+			if(v.y > canvas.height + 100){
 				delete objList[i];
 			}
 		})
@@ -353,17 +379,33 @@
 		particleList.push(newPart);
 	}
 
-	setInterval(function () {
-		addParticle()
-	},100);
 
 
-	setInterval(function () {
-		canvasctx.clearRect(0, 0, canvas.width, canvas.height);
-		particle();
-		render();
-		drawDrop();
-	},20);
+	document.getElementById('play').onclick = function () {
+		document.getElementById('intro').removeAttribute('class');
+		setInterval(function () {
+			addParticle()
+		},100);
+
+
+		setInterval(function () {
+			canvasctx.clearRect(0, 0, canvas.width, canvas.height);
+			particle();
+			render();
+			drawDrop();
+		},20);
+
+		function create(){
+			preRandomColor = shuffle(preRandomColor);
+			preRandomPos = shuffle(preRandomPos);
+			curItem = 0;
+			for(var i = 0; i < Math.floor(perRound); i++){
+				randCube()
+			}
+			setTimeout(create,4000);
+		}
+		create()
+	}
 
 	canvas.ontouchstart = function ontouchstart(e) {
 		e.preventDefault();
